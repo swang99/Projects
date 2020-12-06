@@ -30,12 +30,11 @@ def UpdateEdges(a, b, num, player):
     elif player == 2 and board[a][b][num] == 0:
         board[a][b][num] = 2
 
-def UpdateSq(a, b, p1, p2, player):
+def UpdateSq(a, b, p1, p2, player, squareTurned):
     # are all edges clicked?
     for i in range(4):
         if board[a][b][i] == 0:
-            player = checkTurn(player)
-            return p1, p2, player
+            return p1, p2, player, squareTurned
 
     # if so, change square
     if player == 1 and board[a][b][4] == 0:
@@ -44,8 +43,9 @@ def UpdateSq(a, b, p1, p2, player):
     elif player == 2 and board[a][b][4] == 0:
         board[a][b][4] = 2
         p2 += 1
+    squareTurned += 1
 
-    return p1, p2, player
+    return p1, p2, player, squareTurned
         
 def GameStatus(p1, p2): # Is the game over?
     if p1 + p2 == (DIM ** 2):
@@ -58,7 +58,7 @@ def GameStatus(p1, p2): # Is the game over?
     else:
         return False
 
-def selectEdge(mouse_x, mouse_y, p1, p2, player):
+def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
     # if click outside board or on a vertex
     if mouse_x > (XSLOT + (CELL_SIZE * DIM)) + 3 * LINE_THICKNESS or  mouse_x < XSLOT - LINE_THICKNESS \
     or mouse_y > (YSLOT + (CELL_SIZE * DIM)) + 3 * LINE_THICKNESS or  mouse_y < YSLOT - LINE_THICKNESS \
@@ -71,34 +71,42 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player):
     round_y = ceil(exact_y)
     floor_x = floor(exact_x)
     floor_y = floor(exact_y)
-
-    if abs(exact_x - round_x) < TOLERANCE: # vertical edges
-        player = checkTurn(player)
+    
+    # vertical edges
+    if abs(exact_x - round_x) < TOLERANCE: 
         if 0 < round_x < DIM: # middle edges
             UpdateEdges(round_x, floor_y, 0, player)
-            p1, p2, player = UpdateSq(round_x, floor_y, p1, p2, player)
+            p1, p2, player, squareTurned = UpdateSq(round_x, floor_y, p1, p2, player, squareTurned)
             UpdateEdges(round_x - 1, floor_y, 3, player)
-            p1, p2, player = UpdateSq(round_x - 1, floor_y, p1, p2, player)
+            p1, p2, player, squareTurned = UpdateSq(round_x - 1, floor_y, p1, p2, player, squareTurned)
         elif round_x == 0: # leftmost edge
             UpdateEdges(round_x, floor_y, 0, player) 
-            p1, p2, player = UpdateSq(round_x, floor_y, p1, p2, player)
+            p1, p2, player, squareTurned = UpdateSq(round_x, floor_y, p1, p2, player, squareTurned)
         else: # rightmost edge
             UpdateEdges(round_x - 1, floor_y, 3, player) 
-            p1, p2, player = UpdateSq(round_x - 1, floor_y, p1, p2, player)
-
-    if abs(exact_y - round_y) < TOLERANCE: # horizontal edges
-        player = checkTurn(player)
+            p1, p2, player, squareTurned = UpdateSq(round_x - 1, floor_y, p1, p2, player, squareTurned)
+        
+        player = checkTurn(player) # if no square turned, flip turn
+        if squareTurned != 0: # if at least one square turned, flip turn again
+            player = checkTurn(player)  
+    
+    # horizontal edges
+    if abs(exact_y - round_y) < TOLERANCE: 
         if 0 < round_y < DIM: # middle edges
             UpdateEdges(floor_x, round_y, 1, player)
-            p1, p2, player = UpdateSq(floor_x, round_y, p1, p2, player)
+            p1, p2, player, squareTurned = UpdateSq(floor_x, round_y, p1, p2, player, squareTurned)
             UpdateEdges(floor_x, round_y - 1, 2, player)
-            p1, p2, player = UpdateSq(floor_x, round_y - 1, p1, p2, player)
+            p1, p2, player, squareTurned = UpdateSq(floor_x, round_y - 1, p1, p2, player, squareTurned)
         elif round_y == 0: # uppermost edge
             UpdateEdges(floor_x, round_y, 1, player) 
-            p1, p2, player = UpdateSq(floor_x, round_y, p1, p2, player) 
+            p1, p2, player, squareTurned = UpdateSq(floor_x, round_y, p1, p2, player, squareTurned) 
         else: # lowermost edge
             UpdateEdges(floor_x, round_y - 1, 2, player)
-            p1, p2, player = UpdateSq(floor_x, round_y - 1, p1, p2, player) 
+            p1, p2, player, squareTurned = UpdateSq(floor_x, round_y - 1, p1, p2, player, squareTurned) 
+        
+        player = checkTurn(player)
+        if squareTurned != 0: 
+            player = checkTurn(player)
     
     return p1, p2, player
     
@@ -129,6 +137,7 @@ if __name__ == '__main__':
     board = buildBoard()
     player = 1
     p1_score, p2_score = 0, 0
+    squareTurned = 0
 
     # set up window
     pygame.init()
@@ -143,9 +152,8 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                p1_score, p2_score, player = selectEdge(mouse_x, mouse_y, p1_score, p2_score, player)
+                p1_score, p2_score, player = selectEdge(mouse_x, mouse_y, p1_score, p2_score, player, squareTurned)
                 drawScore(p1_score, p2_score)
-                finished = GameStatus(p1_score, p2_score)
             elif event.type == pygame.QUIT:
                 finished = True
         
