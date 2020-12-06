@@ -35,7 +35,7 @@ class Boxes:
                     pygame.draw.line(self.screen, color, (self.x, new_y), (self.x + size + thickness, new_y), thickness)
                     new_y += size + thickness
                 else:
-                    pygame.draw.rect(self.screen, color, (self.x, new_y), size, size)
+                    pygame.draw.rect(self.screen, color, (self.x + (thickness/2), new_y + (thickness/2), size + 1, size + 1))
                     new_y += size + thickness
             self.x += size + thickness
             new_y = self.y
