@@ -7,7 +7,7 @@ from math import floor, ceil
 from edges import Boxes, Dots
 
 def buildBoard(): #building matrix of the board
-    return [[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]] 
+    return [[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]] 
 
 def drawEdges(): 
     left_edges = Boxes(XSLOT, YSLOT, screen, board)
@@ -26,14 +26,15 @@ def drawEdges():
 
 def UpdateEdges(a, b, num, player): 
     if player == 1 and board[a][b][num] == 0:
-        board[a][b][0] = 1
+        board[a][b][num] = 1
     elif player == 2 and board[a][b][num] == 0:
-        board[a][b][0] = 2
+        board[a][b][num] = 2
 
 def UpdateSq(a, b, p1, p2, player):
     # are all edges clicked?
     for i in range(DIM - 1):
         if board[a][b][i] == 0:
+            print("Passed")
             return p1, p2, player
 
     # if so, change square
@@ -59,23 +60,21 @@ def GameFinish(p1, p2): # Is the game over?
         return False
 
 def selectEdge(mouse_x, mouse_y, p1, p2, player):
-    turn = checkTurn(player)
-    if GameFinish(p1, p2):
-        return p1, p2, player
-    
     exact_x = (mouse_x - XSLOT) / (CELL_SIZE + LINE_THICKNESS) 
     exact_y = (mouse_y - YSLOT) / (CELL_SIZE + LINE_THICKNESS)
     round_x = ceil(exact_x)
     round_y = ceil(exact_y)
     floor_x = floor(exact_x)
     floor_y = floor(exact_y)
-    
+
+    # if click outside board 
     if floor_x > DIM or floor_y > DIM or round_x < 0 or round_y < 0:
-        # if click outside board 
         return p1, p2, player
+    
+    turn = checkTurn(player)
 
     if abs(exact_x - round_x) < TOLERANCE: # vertical edges
-        print(round_x, floor_y)
+        
         if 0 < round_x < DIM: # middle edges
             UpdateEdges(round_x, floor_y, 0, turn)
             UpdateEdges(round_x - 1, floor_y, 3, turn)
@@ -86,12 +85,12 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player):
             UpdateEdges(round_x, floor_y, 0, turn) 
             UpdateSq(round_x, floor_y, p1, p2, turn)
         else: # rightmost edge
-            UpdateEdges(round_x, floor_y, 3, turn) 
-            UpdateSq(round_x, floor_y, p1, p2, turn)
+            UpdateEdges(round_x - 1, floor_y, 3, turn) 
+            UpdateSq(round_x - 1, floor_y, p1, p2, turn)
         turn = checkTurn(player)
 
     if abs(exact_y - round_y) < TOLERANCE: # horizontal edges
-        print(floor_x, round_y)
+        turn = checkTurn(player)
         if 0 < round_y < DIM: # middle edges
             UpdateEdges(floor_x, round_y, 1, turn)
             UpdateEdges(floor_x, round_y - 1, 2, turn)
@@ -99,11 +98,11 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player):
             turn = checkTurn(player)
             UpdateSq(floor_x, round_y - 1, p1, p2, turn)
         elif round_y == 0: # uppermost edge
-            UpdateEdges(round_x, floor_y, 1, turn) 
-            UpdateSq(round_x, floor_y, p1, p2, turn) 
+            UpdateEdges(floor_x, round_y, 1, turn) 
+            UpdateSq(floor_x, round_y, p1, p2, turn) 
         else: # lowermost edge
-            UpdateEdges(round_x, floor_y, 2, turn)
-            UpdateSq(round_x, floor_y, p1, p2, turn) 
+            UpdateEdges(floor_x, round_y - 1, 2, turn)
+            UpdateSq(floor_x, round_y - 1, p1, p2, turn) 
         turn = checkTurn(player)
     
     return p1, p2, turn
@@ -122,7 +121,7 @@ if __name__ == '__main__':
     DIM = 3 # dimension
     CELL_SIZE = 75
     LINE_THICKNESS = 6
-    TOLERANCE = 0.15 # how off click can be
+    TOLERANCE = 0.2 # how off click can be
     WINDOW_X = 700
     WINDOW_Y = 700
     XSLOT = (WINDOW_X / 2) - (DIM / 2) * CELL_SIZE # x-origin 
