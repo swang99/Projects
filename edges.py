@@ -56,3 +56,11 @@ class Dots:
                 new_y += size + thickness
             self.x += size + thickness
             new_y = self.y
+
+class Text:
+    def __init__(self, screen):
+        self.screen = screen
+    
+    def display(self, font, text, color, pos):
+        t = font.render(text, True, color)
+        self.screen.blit(t, pos)
