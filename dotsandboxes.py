@@ -64,16 +64,15 @@ def GameStatus(p1, p2): # Is the game over?
         return False
 
 def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
-    exact_x = (mouse_x - XSLOT) / (CELL_SIZE + LINE_THICKNESS) 
-    exact_y = (mouse_y - YSLOT) / (CELL_SIZE + LINE_THICKNESS)
-    floor_x = floor(exact_x)
-    floor_y = floor(exact_y)
-    round_x = round(exact_x)
-    round_y = round(exact_y)
+    exact_x, exact_y = (mouse_x - XSLOT) / (CELL_SIZE + LINE_THICKNESS), (mouse_y - YSLOT) / (CELL_SIZE + LINE_THICKNESS)
+    floor_x, floor_y = floor(exact_x), floor(exact_y)
+    round_x, round_y = round(exact_x), round(exact_y)
 
     if mouse_x < XSLOT - LINE_THICKNESS or mouse_x > XSLOT + DIM * (CELL_SIZE + LINE_THICKNESS) \
     or mouse_y < YSLOT - LINE_THICKNESS or mouse_y > YSLOT + DIM * (CELL_SIZE + LINE_THICKNESS) \
     or screen.get_at(pygame.mouse.get_pos()) == (83, 83, 83) \
+    or screen.get_at(pygame.mouse.get_pos()) == (214, 48, 49) \
+    or screen.get_at(pygame.mouse.get_pos()) == (9, 132, 227) \
     or abs(exact_x - round_x) > TOLERANCE and abs(exact_y - round_y) > TOLERANCE: # if click outside of edges
         return p1, p2, player
 
@@ -112,18 +111,20 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
     return p1, p2, player
     
 def drawScore(p1, p2, player, screen): 
-    text = {"p1": Text(screen), "p2": Text(screen), "win": Text(screen), "turn": Text(screen)}
+    text = {"p1": Text(screen), "p2": Text(screen), "win": Text(screen), "turn": Text(screen), "restart": Text(screen)}
 
     text["p1"].display(pygame.font.SysFont("freesansbold.ttf", 70), str(p1), (255, 118, 117), (30, 20))
     text["p2"].display(pygame.font.SysFont("freesansbold.ttf", 70), str(p2), (116, 185, 255), (WINDOW_X - 60, 20))
     
     if player == 1:
-        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 50), "Turn ■", (255, 118, 117), (WINDOW_X/2.25, 30))
-    else:
-        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 50), "Turn ■", (116, 185, 255), (WINDOW_X/2.25, 30))
-    
+        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 50), "P1 Turn", (255, 118, 117), (WINDOW_X/2.25, 30))
+    elif player == 2:
+        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 50), "P2 Turn", (116, 185, 255), (WINDOW_X/2.25, 30))
     if GameStatus(p1, p2) != False:
-        text["win"].display(pygame.font.SysFont("freesansbold.ttf", 50), GameStatus(p1, p2), (0, 184, 148), (WINDOW_X/2.25, 30))
+        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 0), "P2 Turn", (116, 185, 255), (WINDOW_X/2.25, 30))
+        screen.fill((255, 255, 255), (WINDOW_X/2.25, 30, 150, 40))
+        text["win"].display(pygame.font.SysFont("freesansbold.ttf", 50), GameStatus(p1, p2), (0, 184, 148), (WINDOW_X/3, 30))
+        text["restart"].display(pygame.font.SysFont("freesansbold.ttf", 25), "Press R to restart", (0, 184, 148), (WINDOW_X/3, 70))
     
 def checkTurn(player):
     return 2 if player == 1 else 1
@@ -155,12 +156,17 @@ if __name__ == '__main__':
     finished = False
     while finished != True:
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN: # mouse click
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 p1_score, p2_score, player = selectEdge(mouse_x, mouse_y, p1_score, p2_score, player, squareTurned)
-            elif event.type == pygame.QUIT:
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and GameStatus(p1_score, p2_score) != False: # restart
+                board = buildBoard()
+                player = 1
+                p1_score, p2_score = 0, 0
+                squareTurned = 0
+            elif event.type == pygame.QUIT: # quit
                 finished = True
-        
+
         screen.fill((255, 255, 255))
         drawEdges()
         drawScore(p1_score, p2_score, player, screen)
