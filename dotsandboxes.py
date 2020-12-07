@@ -109,20 +109,21 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
     return p1, p2, player
     
 def drawScore(p1, p2): 
-    font = pygame.font.SysFont("Cambria", 25)
-    p1_text = font.render("Player 1: " + str(p1), False, (255, 118, 117))
-    p2_text = font.render("Player 2: " + str(p2), False, (116, 185, 255))
-    screen.blit(p1_text, (20, 20))
-    screen.blit(p2_text, (20, 55))
+    font = pygame.font.SysFont("freesansbold.ttf", 75)
+    p1_text = font.render(str(p1), True, (255, 118, 117))
+    p2_text = font.render(str(p2), True, (116, 185, 255))
+    screen.blit(p1_text, ((WINDOW_X / 2.05) - 50, 30))
+    screen.blit(p2_text, ((WINDOW_X / 2.05) + 50, 30))
+    turn_text = font.render("Turn", True, (255, 118, 117))
     if GameStatus(p1, p2) != False:
-        win_text = font.render(GameStatus(p1, p2), False, (0, 184, 148))
-        screen.blit(win_text, (20, 90))
+        win_text = font.render(GameStatus(p1, p2), True, (0, 184, 148))
+        screen.blit(win_text, (XSLOT, YSLOT + 1.33 * DIM * CELL_SIZE))
     
 def checkTurn(player):
     return 2 if player == 1 else 1
 
 if __name__ == '__main__': 
-    DIM = 3 # dimension
+    DIM = 5 # dimension
     CELL_SIZE = 85
     LINE_THICKNESS = 6
     TOLERANCE = 0.1 # how off click can be
