@@ -4,7 +4,7 @@
 
 import pygame
 from math import floor, ceil
-from edges import Boxes, Dots
+from edges import Boxes, Dots, Text
 
 def buildBoard(): # building board matrix
     board = []
@@ -71,8 +71,14 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
     round_x = round(exact_x)
     round_y = round(exact_y)
 
+    if mouse_x < XSLOT - LINE_THICKNESS or mouse_x > XSLOT + DIM * (CELL_SIZE + LINE_THICKNESS) \
+    or mouse_y < YSLOT - LINE_THICKNESS or mouse_y > YSLOT + DIM * (CELL_SIZE + LINE_THICKNESS) \
+    or screen.get_at(pygame.mouse.get_pos()) == (83, 83, 83) \
+    or abs(exact_x - round_x) > TOLERANCE and abs(exact_y - round_y) > TOLERANCE: # if click outside of edges
+        return p1, p2, player
+
     # vertical edges
-    if abs(exact_x - round_x) < TOLERANCE: 
+    elif abs(exact_x - round_x) < TOLERANCE: 
         if 0 < round_x < DIM: # overlapping left/right edges
             UpdateEdges(round_x, floor_y, 0, player)
             p1, p2, player, squareTurned = UpdateSq(round_x, floor_y, p1, p2, player, squareTurned)
@@ -98,9 +104,6 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
         else: # lowermost edge
             UpdateEdges(floor_x, round_y - 1, 2, player)
             p1, p2, player, squareTurned = UpdateSq(floor_x, round_y - 1, p1, p2, player, squareTurned) 
-    
-    else: # if click outside board
-        return p1, p2, player
 
     player = checkTurn(player) # if no square turned, flip turn
     if squareTurned != 0: # if at least one square turned, flip turn again
@@ -108,16 +111,19 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
     
     return p1, p2, player
     
-def drawScore(p1, p2): 
-    font = pygame.font.SysFont("freesansbold.ttf", 75)
-    p1_text = font.render(str(p1), True, (255, 118, 117))
-    p2_text = font.render(str(p2), True, (116, 185, 255))
-    screen.blit(p1_text, ((WINDOW_X / 2.05) - 50, 30))
-    screen.blit(p2_text, ((WINDOW_X / 2.05) + 50, 30))
-    turn_text = font.render("Turn", True, (255, 118, 117))
+def drawScore(p1, p2, player, screen): 
+    text = {"p1": Text(screen), "p2": Text(screen), "win": Text(screen), "turn": Text(screen)}
+
+    text["p1"].display(pygame.font.SysFont("freesansbold.ttf", 70), str(p1), (255, 118, 117), (30, 20))
+    text["p2"].display(pygame.font.SysFont("freesansbold.ttf", 70), str(p2), (116, 185, 255), (WINDOW_X - 60, 20))
+    
+    if player == 1:
+        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 50), "Turn ■", (255, 118, 117), (WINDOW_X/2.25, 30))
+    else:
+        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 50), "Turn ■", (116, 185, 255), (WINDOW_X/2.25, 30))
+    
     if GameStatus(p1, p2) != False:
-        win_text = font.render(GameStatus(p1, p2), True, (0, 184, 148))
-        screen.blit(win_text, (XSLOT, YSLOT + 1.33 * DIM * CELL_SIZE))
+        text["win"].display(pygame.font.SysFont("freesansbold.ttf", 50), GameStatus(p1, p2), (0, 184, 148), (WINDOW_X/2.25, 30))
     
 def checkTurn(player):
     return 2 if player == 1 else 1
@@ -152,11 +158,10 @@ if __name__ == '__main__':
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 p1_score, p2_score, player = selectEdge(mouse_x, mouse_y, p1_score, p2_score, player, squareTurned)
-                drawScore(p1_score, p2_score)
             elif event.type == pygame.QUIT:
                 finished = True
         
         screen.fill((255, 255, 255))
         drawEdges()
-        drawScore(p1_score, p2_score)
+        drawScore(p1_score, p2_score, player, screen)
         pygame.display.update()
