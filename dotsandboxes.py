@@ -6,8 +6,13 @@ import pygame
 from math import floor, ceil
 from edges import Boxes, Dots
 
-def buildBoard(): #building matrix of the board
-    return [[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]] 
+def buildBoard(): # building board matrix
+    board = []
+    for i in range(DIM):
+        board.append([])
+        for j in range(DIM):
+            board[i].append([0,0,0,0,0])
+    return board
 
 def drawEdges(): 
     left_edges = Boxes(XSLOT, YSLOT, screen, board)
@@ -59,22 +64,16 @@ def GameStatus(p1, p2): # Is the game over?
         return False
 
 def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
-    # if click outside board or on a vertex
-    if mouse_x > (XSLOT + (CELL_SIZE * DIM)) + 3 * LINE_THICKNESS or  mouse_x < XSLOT - LINE_THICKNESS \
-    or mouse_y > (YSLOT + (CELL_SIZE * DIM)) + 3 * LINE_THICKNESS or  mouse_y < YSLOT - LINE_THICKNESS \
-    or screen.get_at(pygame.mouse.get_pos()) == (83, 83, 83):
-        return p1, p2, player
-
     exact_x = (mouse_x - XSLOT) / (CELL_SIZE + LINE_THICKNESS) 
     exact_y = (mouse_y - YSLOT) / (CELL_SIZE + LINE_THICKNESS)
-    round_x = ceil(exact_x)
-    round_y = ceil(exact_y)
     floor_x = floor(exact_x)
     floor_y = floor(exact_y)
-    
+    round_x = round(exact_x)
+    round_y = round(exact_y)
+
     # vertical edges
     if abs(exact_x - round_x) < TOLERANCE: 
-        if 0 < round_x < DIM: # middle edges
+        if 0 < round_x < DIM: # overlapping left/right edges
             UpdateEdges(round_x, floor_y, 0, player)
             p1, p2, player, squareTurned = UpdateSq(round_x, floor_y, p1, p2, player, squareTurned)
             UpdateEdges(round_x - 1, floor_y, 3, player)
@@ -82,31 +81,30 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
         elif round_x == 0: # leftmost edge
             UpdateEdges(round_x, floor_y, 0, player) 
             p1, p2, player, squareTurned = UpdateSq(round_x, floor_y, p1, p2, player, squareTurned)
-        else: # rightmost edge
+        else: # rightmost edge - only working when cursor is on left side
             UpdateEdges(round_x - 1, floor_y, 3, player) 
             p1, p2, player, squareTurned = UpdateSq(round_x - 1, floor_y, p1, p2, player, squareTurned)
-        
-        player = checkTurn(player) # if no square turned, flip turn
-        if squareTurned != 0: # if at least one square turned, flip turn again
-            player = checkTurn(player)  
     
     # horizontal edges
-    if abs(exact_y - round_y) < TOLERANCE: 
-        if 0 < round_y < DIM: # middle edges
+    elif abs(exact_y - round_y) < TOLERANCE: 
+        if 0 < round_y < DIM: # overlapping upper/lower edges
             UpdateEdges(floor_x, round_y, 1, player)
             p1, p2, player, squareTurned = UpdateSq(floor_x, round_y, p1, p2, player, squareTurned)
             UpdateEdges(floor_x, round_y - 1, 2, player)
             p1, p2, player, squareTurned = UpdateSq(floor_x, round_y - 1, p1, p2, player, squareTurned)
-        elif round_y == 0: # uppermost edge
+        elif round_y == 0: # uppermost edge - NOT WORKING
             UpdateEdges(floor_x, round_y, 1, player) 
             p1, p2, player, squareTurned = UpdateSq(floor_x, round_y, p1, p2, player, squareTurned) 
         else: # lowermost edge
             UpdateEdges(floor_x, round_y - 1, 2, player)
             p1, p2, player, squareTurned = UpdateSq(floor_x, round_y - 1, p1, p2, player, squareTurned) 
-        
+    
+    else: # if click outside board
+        return p1, p2, player
+
+    player = checkTurn(player) # if no square turned, flip turn
+    if squareTurned != 0: # if at least one square turned, flip turn again
         player = checkTurn(player)
-        if squareTurned != 0: 
-            player = checkTurn(player)
     
     return p1, p2, player
     
@@ -125,9 +123,9 @@ def checkTurn(player):
 
 if __name__ == '__main__': 
     DIM = 3 # dimension
-    CELL_SIZE = 75
+    CELL_SIZE = 85
     LINE_THICKNESS = 6
-    TOLERANCE = 0.2 # how off click can be
+    TOLERANCE = 0.1 # how off click can be
     WINDOW_X = 700
     WINDOW_Y = 700
     XSLOT = (WINDOW_X / 2) - (DIM / 2) * CELL_SIZE # x-origin 
