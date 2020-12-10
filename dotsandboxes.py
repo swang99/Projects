@@ -1,6 +1,6 @@
 # Stephen Wang
-# Revised: 12/5/20, Original: 5/23/18
-# Dots and Boxes; 2 Player, AI (Minimax w/ Alpha-Beta Pruning)
+# Revised: 12/5/20
+# Dots and Boxes; 2 Player
 
 import pygame
 from math import floor, ceil
