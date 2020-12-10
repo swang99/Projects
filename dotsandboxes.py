@@ -1,10 +1,10 @@
 # Stephen Wang
-# Edited: 12/5/20, Original: 5/23/18
-# Final project - Dots and boxes
+# Revised: 12/5/20, Original: 5/23/18
+# Dots and Boxes; 2 Player, AI (Minimax w/ Alpha-Beta Pruning)
 
 import pygame
 from math import floor, ceil
-from edges import Boxes, Dots, Text
+from edges import Boxes
 
 def buildBoard(): # building board matrix
     board = []
@@ -14,20 +14,17 @@ def buildBoard(): # building board matrix
             board[i].append([0,0,0,0,0])
     return board
 
-def drawEdges(): 
-    left_edges = Boxes(XSLOT, YSLOT, screen, board)
-    upper_edges = Boxes(XSLOT, YSLOT, screen, board)
-    lower_edges = Boxes(XSLOT, YSLOT + CELL_SIZE + LINE_THICKNESS, screen, board)
-    right_edges = Boxes(XSLOT+ CELL_SIZE + LINE_THICKNESS, YSLOT, screen, board)
-    squares = Boxes(XSLOT, YSLOT, screen, board)
-    dots = Dots(XSLOT, YSLOT, screen, board)
+def drawEdges(): # draw edges, squares, and dots
+    edges = {"left_edges": Boxes(screen, board), "upper_edges": Boxes(screen, board), \
+            "lower_edges": Boxes(screen, board), "right_edges": Boxes(screen, board), \
+            "squares": Boxes(screen, board), "dots": Boxes(screen, board)}
 
-    squares.draw(4, DIM, CELL_SIZE, LINE_THICKNESS)
-    left_edges.draw(0, DIM, CELL_SIZE, LINE_THICKNESS)
-    upper_edges.draw(1, DIM, CELL_SIZE, LINE_THICKNESS)
-    lower_edges.draw(2, DIM, CELL_SIZE, LINE_THICKNESS)
-    right_edges.draw(3, DIM, CELL_SIZE, LINE_THICKNESS)
-    dots.draw(DIM, CELL_SIZE, LINE_THICKNESS)
+    edges["squares"].draw(XSLOT, YSLOT, 4, DIM, CELL_SIZE, LINE_THICKNESS)
+    edges["left_edges"].draw(XSLOT, YSLOT, 0, DIM, CELL_SIZE, LINE_THICKNESS)
+    edges["upper_edges"].draw(XSLOT, YSLOT, 1, DIM, CELL_SIZE, LINE_THICKNESS)
+    edges["lower_edges"].draw(XSLOT, YSLOT + CELL_SIZE + LINE_THICKNESS, 2, DIM, CELL_SIZE, LINE_THICKNESS)
+    edges["right_edges"].draw(XSLOT + CELL_SIZE + LINE_THICKNESS, YSLOT, 3, DIM, CELL_SIZE, LINE_THICKNESS)
+    edges["dots"].dots(XSLOT, YSLOT, DIM, CELL_SIZE, LINE_THICKNESS)
 
 def UpdateEdges(a, b, num, player): 
     if player == 1 and board[a][b][num] == 0:
@@ -55,9 +52,9 @@ def UpdateSq(a, b, p1, p2, player, squareTurned):
 def GameStatus(p1, p2): # Is the game over?
     if p1 + p2 == (DIM ** 2):
         if p1 > p2:
-            return "Player 1 Wins!"
+            return "P1 (Red) Wins!"
         elif p2 > p1:
-            return "Player 2 Wins!"
+            return "P2 (Blue) Wins!"
         else:
             return "Tie Game!"
     else:
@@ -68,8 +65,8 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
     floor_x, floor_y = floor(exact_x), floor(exact_y)
     round_x, round_y = round(exact_x), round(exact_y)
 
-    if mouse_x < XSLOT - LINE_THICKNESS or mouse_x > XSLOT + DIM * (CELL_SIZE + LINE_THICKNESS) \
-    or mouse_y < YSLOT - LINE_THICKNESS or mouse_y > YSLOT + DIM * (CELL_SIZE + LINE_THICKNESS) \
+    if mouse_x < XSLOT - LINE_THICKNESS or mouse_x > XSLOT + LINE_THICKNESS + DIM * (CELL_SIZE + LINE_THICKNESS) \
+    or mouse_y < YSLOT - LINE_THICKNESS or mouse_y > YSLOT + LINE_THICKNESS + DIM * (CELL_SIZE + LINE_THICKNESS) \
     or screen.get_at(pygame.mouse.get_pos()) == (83, 83, 83) \
     or screen.get_at(pygame.mouse.get_pos()) == (214, 48, 49) \
     or screen.get_at(pygame.mouse.get_pos()) == (9, 132, 227) \
@@ -111,31 +108,36 @@ def selectEdge(mouse_x, mouse_y, p1, p2, player, squareTurned):
     return p1, p2, player
     
 def drawScore(p1, p2, player, screen): 
-    text = {"p1": Text(screen), "p2": Text(screen), "win": Text(screen), "turn": Text(screen), "restart": Text(screen)}
+    # storing all text objects
+    text = {"p1": Boxes(screen, board), "p2": Boxes(screen, board), "win": Boxes(screen, board), \
+            "turn": Boxes(screen, board), "restart": Boxes(screen, board)}
 
-    text["p1"].display(pygame.font.SysFont("freesansbold.ttf", 70), str(p1), (255, 118, 117), (30, 20))
-    text["p2"].display(pygame.font.SysFont("freesansbold.ttf", 70), str(p2), (116, 185, 255), (WINDOW_X - 60, 20))
+    # draw current score
+    text["p1"].display_txt(pygame.font.SysFont("freesansbold.ttf", 70), str(p1), (255, 118, 117), (30, 20))
+    text["p2"].display_txt(pygame.font.SysFont("freesansbold.ttf", 70), str(p2), (116, 185, 255), (WINDOW_X - 60, 20))
     
+    # if game is not over, display whose turn it is
     if player == 1:
-        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 50), "P1 Turn", (255, 118, 117), (WINDOW_X/2.25, 30))
+        text["turn"].display_txt(pygame.font.SysFont("freesansbold.ttf", 50), "P1 Turn", (255, 118, 117), (WINDOW_X/2.25, 30))
     elif player == 2:
-        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 50), "P2 Turn", (116, 185, 255), (WINDOW_X/2.25, 30))
+        text["turn"].display_txt(pygame.font.SysFont("freesansbold.ttf", 50), "P2 Turn", (116, 185, 255), (WINDOW_X/2.25, 30))
+   
+    # otherwise, display winner and restart message
     if GameStatus(p1, p2) != False:
-        text["turn"].display(pygame.font.SysFont("freesansbold.ttf", 0), "P2 Turn", (116, 185, 255), (WINDOW_X/2.25, 30))
+        text["turn"].display_txt(pygame.font.SysFont("freesansbold.ttf", 0), "P2 Turn", (116, 185, 255), (WINDOW_X/2.25, 30))
         screen.fill((255, 255, 255), (WINDOW_X/2.25, 30, 150, 40))
-        text["win"].display(pygame.font.SysFont("freesansbold.ttf", 50), GameStatus(p1, p2), (0, 184, 148), (WINDOW_X/3, 30))
-        text["restart"].display(pygame.font.SysFont("freesansbold.ttf", 25), "Press R to restart", (0, 184, 148), (WINDOW_X/3, 70))
+        text["win"].display_txt(pygame.font.SysFont("freesansbold.ttf", 50), GameStatus(p1, p2), (0, 184, 148), (WINDOW_X/3, 30))
+        text["restart"].display_txt(pygame.font.SysFont("freesansbold.ttf", 25), "Press R to restart", (0, 184, 148), (WINDOW_X/3, 70))
     
 def checkTurn(player):
     return 2 if player == 1 else 1
 
 if __name__ == '__main__': 
-    DIM = 5 # dimension
+    DIM = 3 # dimension
     CELL_SIZE = 85
     LINE_THICKNESS = 6
     TOLERANCE = 0.1 # how off click can be
-    WINDOW_X = 700
-    WINDOW_Y = 700
+    WINDOW_X, WINDOW_Y = 700, 700 # window size
     XSLOT = (WINDOW_X / 2) - (DIM / 2) * CELL_SIZE # x-origin 
     YSLOT = (WINDOW_Y / 2) - (DIM / 2) * CELL_SIZE # y-origin
 
@@ -143,7 +145,7 @@ if __name__ == '__main__':
     board = buildBoard()
     player = 1
     p1_score, p2_score = 0, 0
-    squareTurned = 0
+    squareTurned = 0 # has a square been made?
 
     # set up window
     pygame.init()
