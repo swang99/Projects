@@ -1,14 +1,12 @@
 import pygame
 
 class Boxes:
-    def __init__(self, x, y, screen, board):
-        self.x = x
-        self.y = y
+    def __init__(self, screen, board):
         self.screen = screen
         self.board = board
     
-    def draw(self, num, dim, size, thickness):
-        new_y = self.y
+    def draw(self, x, y, num, dim, size, thickness):
+        new_y = y
         for i in range(dim):
             for j in range(dim):
                 # update color
@@ -29,38 +27,27 @@ class Boxes:
 
                 # draw edges/squares
                 if num == 0 or num == 3:
-                    pygame.draw.line(self.screen, color, (self.x, new_y), (self.x, new_y + size + thickness), thickness)
+                    pygame.draw.line(self.screen, color, (x, new_y), (x, new_y + size + thickness), thickness)
                 elif num == 1 or num == 2:
-                    pygame.draw.line(self.screen, color, (self.x, new_y), (self.x + size + thickness, new_y), thickness)
+                    pygame.draw.line(self.screen, color, (x, new_y), (x + size + thickness, new_y), thickness)
                 else:
-                    pygame.draw.rect(self.screen, color, (self.x + (thickness/2), new_y + (thickness/2), size + 1, size + 1))
+                    pygame.draw.rect(self.screen, color, (x + (thickness/2), new_y + (thickness/2), size + 1, size + 1))
                 new_y += size + thickness
-            self.x += size + thickness
-            new_y = self.y
+            x += size + thickness
+            new_y = y
 
-class Dots:
-    def __init__(self, x, y, screen, board):
-        self.x = x
-        self.y = y
-        self.screen = screen
-        self.board = board
-    
-    def draw(self, dim, size, thickness):
+    def dots(self, x, y, dim, size, thickness):
         RADIUS = 8
         color = (83, 83, 83)
-        new_y = self.y
+        new_y = y
 
         for i in range(dim + 1):
             for j in range(dim + 1):
-                pygame.draw.circle(self.screen, color, (self.x, new_y), RADIUS)
+                pygame.draw.circle(self.screen, color, (x, new_y), RADIUS)
                 new_y += size + thickness
-            self.x += size + thickness
-            new_y = self.y
-
-class Text:
-    def __init__(self, screen):
-        self.screen = screen
+            x += size + thickness
+            new_y = y
     
-    def display(self, font, text, color, pos):
+    def display_txt(self, font, text, color, pos):
         t = font.render(text, True, color)
         self.screen.blit(t, pos)
