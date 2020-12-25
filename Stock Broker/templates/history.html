@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <h3>History</h3>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Ticker</th>
+          <th scope="col">Shares</th>
+          <th scope="col">Price</th>
+          <th scope="col">Transacted</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in history %}
+          <tr>
+            <td>{{ row.ticker }}</td>
+            <td>{{ row.shares }}</td>
+            <td>{{ "${:,.2f}".format(row.price) }}</td>
+            <td>{{ row.transacted }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

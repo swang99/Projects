@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quote
+{% endblock %}
+
+{% block main %}
+    <h3>Quote Lookup</h3>
+    <form action="/quote" method="post">
+        <div class="form-group">
+            <input required autofocus class="form-control" name="symbol" placeholder="Ticker Symbol" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+    <p class="notmatch">{{ quote }} {{ quote_err }}</p>
+    {% block rform %}{% endblock %}
+{% endblock %}

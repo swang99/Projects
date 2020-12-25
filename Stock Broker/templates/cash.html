@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+
+{% block title %}
+    Cash
+{% endblock %}
+
+{% block main %}
+    <h3>Add or Withdraw Cash</h3>
+    <form action="/cash" method="post">
+        <div class="form-group">
+            <span class="input-symbol-usd">
+            <input required autofocus class="form-control" name="amount" placeholder="Amount" type="number" step="0.01">
+            </span>
+        </div>
+        <button class="btn btn-primary" type="submit" id="btn-submit">Submit</button>
+    </form>
+{% endblock %}
+

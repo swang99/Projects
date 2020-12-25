@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Portfolio
+{% endblock %}
+
+{% block main %}
+    <h3>Your Portfolio</h3>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Ticker</th>
+          <th scope="col">Name</th>
+          <th scope="col">Shares</th>
+          <th scope="col">Price</th>
+          <th scope="col">TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in holdings %}
+          <tr>
+            <td>{{ row.ticker }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.shares }}</td>
+            <td>{{ "${:,.2f}".format(row.price) }}</td>
+            <td>{{ "${:,.2f}".format(row.amount) }}</td>
+          </tr>
+        {% endfor %}
+          <tr>
+            <td>CASH</td>
+            <td colspan="2"></td>
+            <td><a href="/cash">Add or Withdraw Cash</a></td>
+            <td>{{ "${:,.2f}".format(amntcash) }}</td>
+          </tr>
+          <tr>
+            <td colspan="4"></td>
+            <td><b>{{ "${:,.2f}".format(totalvalue) }}</b></td>
+          </tr>
+      </tbody>
+    </table>
+{% endblock %}
