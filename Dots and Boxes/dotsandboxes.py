@@ -6,18 +6,14 @@ import pygame
 from math import floor, ceil
 from edges import Boxes
 
-def buildBoard(): # building board matrix
-    board = []
-    for i in range(DIM):
-        board.append([])
-        for j in range(DIM):
-            board[i].append([0,0,0,0,0])
-    return board
+def buildBoard(): # building board matrix | k = square | j = a row of squares | i = all rows
+    return [[[0 for k in range(5)] for j in range(DIM)] for i in range(DIM)]
 
 def drawEdges(): # draw edges, squares, and dots
-    edges = {"left_edges": Boxes(screen, board), "upper_edges": Boxes(screen, board), \
-            "lower_edges": Boxes(screen, board), "right_edges": Boxes(screen, board), \
-            "squares": Boxes(screen, board), "dots": Boxes(screen, board)}
+    edges = {}
+
+    for key in ["left_edges", "upper_edges", "lower_edges", "right_edges", "squares", "dots"]:
+        edges[key] = Boxes(screen, board)
 
     edges["squares"].draw(XSLOT, YSLOT, 4, DIM, CELL_SIZE, LINE_THICKNESS)
     edges["left_edges"].draw(XSLOT, YSLOT, 0, DIM, CELL_SIZE, LINE_THICKNESS)
