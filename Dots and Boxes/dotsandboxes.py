@@ -23,10 +23,8 @@ def drawEdges(): # draw edges, squares, and dots
     edges["dots"].dots(XSLOT, YSLOT, DIM, CELL_SIZE, LINE_THICKNESS)
 
 def UpdateEdges(a, b, num, player): 
-    if player == 1 and board[a][b][num] == 0:
-        board[a][b][num] = 1
-    elif player == 2 and board[a][b][num] == 0:
-        board[a][b][num] = 2
+    if board[a][b][num] == 0:
+        board[a][b][num] = player
 
 def UpdateSq(a, b, p1, p2, player, squareTurned):
     # are all edges clicked?
