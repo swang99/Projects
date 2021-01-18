@@ -6,7 +6,7 @@ import pygame
 from math import floor, ceil
 from edges import Boxes
 
-def buildBoard(): # building board matrix | k = square | j = a row of squares | i = all rows
+def build_board(): # building board matrix | k = square | j = a row of squares | i = all rows
     return [[[0 for k in range(5)] for j in range(DIM)] for i in range(DIM)]
 
 def draw_edges(): # draw edges, squares, and dots
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     YSLOT = (WINDOW_Y / 2) - (DIM / 2) * CELL # y-origin
 
     # game mechanics
-    board = buildBoard()
+    board = build_board()
     player = 1
     p1_score, p2_score = 0, 0
     sq_t = 0 # has a square been made?
@@ -164,7 +164,7 @@ if __name__ == '__main__':
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 p1_score, p2_score, player = select_edge(mouse_x, mouse_y, p1_score, p2_score, player, sq_t)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and game_status(p1_score, p2_score) != False: # restart
-                board = buildBoard()
+                board = build_board()
                 player = 1
                 p1_score, p2_score = 0, 0
                 sq_t = 0
