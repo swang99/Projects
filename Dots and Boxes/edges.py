@@ -4,7 +4,7 @@ class Boxes:
     def __init__(self, screen, board):
         self.screen = screen
         self.board = board
-    
+
     def draw(self, x, y, num, dim, size, thickness):
         new_y = y
         for i in range(dim):
@@ -38,16 +38,15 @@ class Boxes:
 
     def dots(self, x, y, dim, size, thickness):
         RADIUS = 8
-        color = (83, 83, 83)
         new_y = y
 
         for i in range(dim + 1):
             for j in range(dim + 1):
-                pygame.draw.circle(self.screen, color, (x, new_y), RADIUS)
+                pygame.draw.circle(self.screen, (83, 83, 83), (x, new_y), RADIUS)
                 new_y += size + thickness
             x += size + thickness
             new_y = y
-    
+
     def display_txt(self, font, text, color, pos):
         t = font.render(text, True, color)
         self.screen.blit(t, pos)
