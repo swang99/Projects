@@ -9,6 +9,7 @@
 
 ### Files
 dotsandboxes.py - Contains the game interface and logic.
+
 edges.py - Contains a class which draws the board and blits the game's text.
 
 ### System requirements
