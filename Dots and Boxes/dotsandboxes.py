@@ -57,20 +57,23 @@ def select_edge(mouse_x, mouse_y, p1, p2, player, sq_t):
     floor_x, floor_y = floor(exact_x), floor(exact_y)
     round_x, round_y = round(exact_x), round(exact_y)
 
-    # if Case 1, 2, or 3 -> do not select an edge
+    # Case 1, 2, or 3 - do not select an edge
     # Case 1: Click outside of board
-    if (mouse_x < XSLOT - LINE) or (mouse_x > XSLOT + LINE + DIM * (CELL + LINE)) \
-    or (mouse_y < YSLOT - LINE) or (mouse_y > YSLOT + LINE + DIM * (CELL + LINE)):
+    if not (XSLOT - LINE < mouse_x < XSLOT + LINE + DIM * (CELL + LINE)) \
+    or not (YSLOT - LINE < mouse_y < YSLOT + LINE + DIM * (CELL + LINE)):
         return p1, p2, player
 
     # Case 2: Click inside board
     if (abs(exact_x - round_x) > TOLERANCE and abs(exact_y - round_y) > TOLERANCE):
         return p1, p2, player
 
-    # Case 3: Click on a dot or on an edge already taken
-    if (screen.get_at(pygame.mouse.get_pos()) == (83, 83, 83)) \
-    or (screen.get_at(pygame.mouse.get_pos()) == (214, 48, 49)) \
-    or (screen.get_at(pygame.mouse.get_pos()) == (9, 132, 227)): 
+    # Case 3: Click on an edge already taken
+    if abs(exact_x - round_x) < TOLERANCE and round_x < DIM and board[round_x][floor_y][0] != 0 \
+    or abs(exact_x - round_x) < TOLERANCE and round_x == DIM and board[DIM-1][floor_y][3] != 0:
+        return p1, p2, player
+    
+    if abs(exact_y - round_y) < TOLERANCE and round_y < DIM and board[floor_x][round_y][1] != 0 \
+    or abs(exact_y - round_y) < TOLERANCE and round_y == DIM and board[floor_x][DIM-1][2] != 0:
         return p1, p2, player
 
     # vertical edges
@@ -79,9 +82,9 @@ def select_edge(mouse_x, mouse_y, p1, p2, player, sq_t):
             p1, p2, player, sq_t = update_board(round_x, floor_y, 0, player, p1, p2, sq_t)
             p1, p2, player, sq_t = update_board(round_x - 1, floor_y, 3, player, p1, p2, sq_t)
         elif round_x == 0: # leftmost edge
-            p1, p2, player, sq_t = update_board(round_x, floor_y, 0, player, p1, p2, sq_t)
+            p1, p2, player, sq_t = update_board(0, floor_y, 0, player, p1, p2, sq_t)
         else: # rightmost edge
-            p1, p2, player, sq_t = update_board(round_x - 1, floor_y, 3, player, p1, p2, sq_t)
+            p1, p2, player, sq_t = update_board(DIM - 1, floor_y, 3, player, p1, p2, sq_t)
 
     # horizontal edges
     elif abs(exact_y - round_y) < TOLERANCE: 
@@ -89,9 +92,9 @@ def select_edge(mouse_x, mouse_y, p1, p2, player, sq_t):
             p1, p2, player, sq_t = update_board(floor_x, round_y, 1, player, p1, p2, sq_t)
             p1, p2, player, sq_t = update_board(floor_x, round_y - 1, 2, player, p1, p2, sq_t)
         elif round_y == 0: # uppermost edge
-            p1, p2, player, sq_t = update_board(floor_x, round_y, 1, player, p1, p2, sq_t)
+            p1, p2, player, sq_t = update_board(floor_x, 0, 1, player, p1, p2, sq_t)
         else: # lowermost edge
-            p1, p2, player, sq_t = update_board(floor_x, round_y - 1, 2, player, p1, p2, sq_t)
+            p1, p2, player, sq_t = update_board(floor_x, DIM - 1, 2, player, p1, p2, sq_t)
 
     player = check_turn(player) # if no square turned, flip turn
     if sq_t != 0: # if at least one square turned, flip turn again
@@ -134,7 +137,7 @@ if __name__ == '__main__':
     DIM = 3                                     # dimension
     CELL = 85                                   # cell size
     LINE = 6                                    # line thickness
-    TOLERANCE = 0.1                             # how off click can be
+    TOLERANCE = 0.07                            # how off click can be
     WINDOW_X, WINDOW_Y = 700, 700               # window size
     XSLOT = (WINDOW_X / 2) - (DIM / 2) * CELL   # x-origin of board
     YSLOT = (WINDOW_Y / 2) - (DIM / 2) * CELL   # y-origin of board
