@@ -1,12 +1,12 @@
 # Stephen Wang
-# Revised: 12/5/20
+# Revised: 2/6/21
 # Dots and Boxes; 2 Player
 
 import pygame
 from math import floor, ceil
 from edges import Boxes
 
-def build_board(): # building board matrix | k = square | j = a row of squares | i = all rows
+def build_board(): # building board matrix | k = square | j = a row of squares | i = num of rows
     return [[[0 for k in range(5)] for j in range(DIM)] for i in range(DIM)]
 
 def draw_edges(): # draw edges, squares, and dots
@@ -131,26 +131,24 @@ def check_turn(player):
     return 2 if player == 1 else 1
 
 if __name__ == '__main__': 
-    DIM = 3 # dimension
-    CELL = 85
-    LINE = 6
-    TOLERANCE = 0.1 # how off click can be
-    WINDOW_X, WINDOW_Y = 700, 700 # window size
-    XSLOT = (WINDOW_X / 2) - (DIM / 2) * CELL # x-origin
-    YSLOT = (WINDOW_Y / 2) - (DIM / 2) * CELL # y-origin
+    DIM = 3                                     # dimension
+    CELL = 85                                   # cell size
+    LINE = 6                                    # line thickness
+    TOLERANCE = 0.1                             # how off click can be
+    WINDOW_X, WINDOW_Y = 700, 700               # window size
+    XSLOT = (WINDOW_X / 2) - (DIM / 2) * CELL   # x-origin of board
+    YSLOT = (WINDOW_Y / 2) - (DIM / 2) * CELL   # y-origin of board
 
     # game mechanics
-    board = build_board()
-    player = 1
-    p1_score, p2_score = 0, 0
-    sq_t = 0 # has a square been made?
+    board = build_board()       # game board
+    player = 1                  # current turn
+    p1_score, p2_score = 0, 0   # scores
+    sq_t = 0                    # number of squares made
 
     # set up window
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_X, WINDOW_Y))
     pygame.display.set_caption("Dots and Boxes")
-    icon = pygame.image.load("square.png")
-    pygame.display.set_icon(icon)
 
     # game loop
     finished = False

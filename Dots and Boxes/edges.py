@@ -40,6 +40,7 @@ class Boxes:
         RADIUS = 8
         new_y = y
 
+        # draw the dots
         for i in range(dim + 1):
             for j in range(dim + 1):
                 pygame.draw.circle(self.screen, (83, 83, 83), (x, new_y), RADIUS)
@@ -48,5 +49,6 @@ class Boxes:
             new_y = y
 
     def display_txt(self, font, text, color, pos):
+        # simplified method to blit pygame text
         t = font.render(text, True, color)
         self.screen.blit(t, pos)
