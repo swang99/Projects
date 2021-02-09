@@ -5,14 +5,14 @@
 </p>
 
 ### About
-A simple question answering system based on inverse document frequency (IDF), that retrives information from a corpus of .txt files.
-When presented with a query (a user-inputted question in English), document retrieval will first identify which files are most relevant to the query. Once the top documents are found, it will be subdivided into sentences so that the most relevant one to the question can be determined.
+A simple question answering system that retrives information from a corpus of text files.
+When presented with a query (a user-inputted question in English), document retrieval will first identify which files are most relevant to the query. Once the top documents are found, it will be divided into sentences so that the most relevant one to the question can be determined.
 
-The algorithm I used to determine the most relevant document and sentences is called tf-idf. It ranks documents based on the term frequency for words in the query and the inverse document frequency for words in the query. Once we’ve found the most relevant documents, there many possible metrics for scoring passages, but we’ll use a combination of inverse document frequency and a query term density measure (described in the Specification).
+The statistical measure I used to determine relevant matches is called tf-idf. It ranks documents based on the term frequency for words in the query and the inverse document frequency of the word, which measures its rarity inside the corpus. After finding the most relevant documents, I used a combination of inverse document frequency and query term density to score the sentences. Query term density is the proportion of words in the sentence that are also words in the query.
 
 ### Files
-- corpus - folder of Wikipedia articles for the AI to parse  
-- questions.py - takes a user-inputted question and gives the best answer based on info in the corpus.
+- corpus - folder of Wikipedia articles for the AI to parse
+- questions.py - where the user inputs their questions and gets the best answer based on 
 
 ### Sample Questions and Inputs
 - Who developed probability?
@@ -21,10 +21,12 @@ The algorithm I used to determine the most relevant document and sentences is ca
 - How do neurons connect in a neural network?
 - What are the types of supervised learning?
 - What is this the can? → invalid question
-- x / exit → exits the program
+- x / exit → exits the program  
+  
+Note: the wording of the question matters a lot, so look inside the corpus documents to strategically phrase them.
 
 ### System Requirements  
 #### nltk
-You might also need to use the following download prompts in the terminal:  
+You might also need to use the following prompts in the terminal:  
 `python -m nltk.downloader stopwords`  
 `python -m nltk.downloader 'punkt'`
