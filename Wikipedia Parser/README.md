@@ -8,7 +8,7 @@
 A simple question answering system that retrives information from a corpus of text files.
 When presented with a query (a user-inputted question in English), document retrieval will first identify which files are most relevant to the query. Once the top documents are found, it will be divided into sentences so that the most relevant one to the question can be determined.
 
-The statistical measure I used to determine relevant matches is called tf-idf. It ranks documents based on the term frequency for words in the query and the inverse document frequency of the word, which measures its rarity inside the corpus. After finding the most relevant documents, I used a combination of inverse document frequency and query term density to score the sentences. Query term density is the proportion of words in the sentence that are also words in the query.
+The statistical metric I used to determine relevant matches is called tf-idf. It ranks documents based on the term frequency for words in the query and the inverse document frequency of the word, which measures its rarity inside the corpus. After finding the most relevant documents, I used a combination of inverse document frequency and query term density to score the sentences. Query term density is the proportion of words in the sentence that are also words in the query.
 
 ### Files
 - corpus - folder of Wikipedia articles for the AI to parse
