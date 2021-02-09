@@ -26,7 +26,8 @@ The statistical metric I used to determine relevant matches is called tf-idf. It
 Note: the wording of the question matters a lot, so look inside the corpus documents to strategically phrase them.
 
 ### System Requirements  
-#### nltk
+`pip3 install nltk`  
+
 You might also need to use the following prompts in the terminal:  
 `python -m nltk.downloader stopwords`  
 `python -m nltk.downloader 'punkt'`
