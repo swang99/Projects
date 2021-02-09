@@ -75,15 +75,11 @@ def tokenize(document):
     Process document by coverting all words to lowercase, and removing any
     punctuation or English stopwords.
     """
-    # tokenizer automatically removes punctuation
-    tokenizer = nltk.RegexpTokenizer(r"\w+") 
-    words = tokenizer.tokenize(document)
+    punctuation = string.punctuation
+    stopwords = nltk.corpus.stopwords.words("english")
+    words = nltk.word_tokenize(document.lower())
     
-    # lowercase all words
-    lowercased = [w.lower() for w in words]
-    
-    # filter out all stopwords
-    return [w for w in lowercased if not w in nltk.corpus.stopwords.words('english')] 
+    return [w for w in words if w not in punctuation and w not in stopwords] 
 
 
 def compute_idfs(documents):
