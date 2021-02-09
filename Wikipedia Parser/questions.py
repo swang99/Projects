@@ -4,12 +4,10 @@ import os
 import string
 from math import log10
 
-FILE_MATCHES = 2
+FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
 
-
 def main():
-
     # Check command-line arguments
     if len(sys.argv) != 2:
         sys.exit("Usage: python questions.py corpus")
@@ -22,28 +20,38 @@ def main():
     }
     file_idfs = compute_idfs(file_words)
 
-    # Prompt user for query
-    query = set(tokenize(input("Query: ")))
+    while True:
+        # Prompt user for query
+        query = set(tokenize(input("Query: ")))
 
-    # Determine top file matches according to TF-IDF
-    filenames = top_files(query, file_words, file_idfs, n=FILE_MATCHES)
+        # Exit query
+        if len(query) == 1 and (list(query)[0] == "x" or list(query)[0] == "exit"):
+            print("See you later!") 
+            sys.exit()
 
-    # Extract sentences from top files
-    sentences = dict()
-    for filename in filenames:
-        for passage in files[filename].split("\n"):
-            for sentence in nltk.sent_tokenize(passage):
-                tokens = tokenize(sentence)
-                if tokens:
-                    sentences[sentence] = tokens
+        # Invalid question
+        elif len(query) == 0: 
+            print("Please enter a valid question.")
+        else:
+            # Determine top file matches according to TF-IDF
+            filenames = top_files(query, file_words, file_idfs, n=FILE_MATCHES)
 
-    # Compute IDF values across sentences
-    idfs = compute_idfs(sentences)
+            # Extract sentences from top files
+            sentences = dict()
+            for filename in filenames:
+                for passage in files[filename].split("\n"):
+                    for sentence in nltk.sent_tokenize(passage):
+                        tokens = tokenize(sentence)
+                        if tokens:
+                            sentences[sentence] = tokens
 
-    # Determine top sentence matches
-    matches = top_sentences(query, sentences, idfs, n=SENTENCE_MATCHES)
-    for match in matches:
-        print(match)
+            # Compute IDF values across sentences
+            idfs = compute_idfs(sentences)
+
+            # Determine top sentence matches
+            matches = top_sentences(query, sentences, idfs, n=SENTENCE_MATCHES)
+            for match in matches:
+                print(match)
 
 
 def load_files(directory):
@@ -52,15 +60,10 @@ def load_files(directory):
     `.txt` file inside that directory to the file's contents as a string.
     """
     corpus_dict = {}
-    files = []
 
-    for file in os.listdir(directory):
-        files.append(file)
-    
-    for i in range(len(os.listdir(directory))):
-        path = os.path.join(directory, files[i])
-        with open(path) as f:
-            corpus_dict[files[i]] = f.read()
+    for file_name in os.listdir(directory):
+        with open(os.path.join(directory, file_name), encoding="utf-8") as f:
+            corpus_dict[file_name] = f.read()
     
     return corpus_dict
 
@@ -75,12 +78,12 @@ def tokenize(document):
     # tokenizer automatically removes punctuation
     tokenizer = nltk.RegexpTokenizer(r"\w+") 
     words = tokenizer.tokenize(document)
+    
     # lowercase all words
     lowercased = [w.lower() for w in words]
+    
     # filter out all stopwords
-    filtered = [w for w in lowercased if not w in nltk.corpus.stopwords.words('english')] 
-
-    return filtered
+    return [w for w in lowercased if not w in nltk.corpus.stopwords.words('english')] 
 
 
 def compute_idfs(documents):
@@ -125,10 +128,8 @@ def top_files(query, files, idfs, n):
             if word in idfs:
                 doc_tfidf[doc] += files[doc].count(word) * idfs[word]
     
-     # extract document key for each item in a dict sorted by tf-idf
-    ranked_docs = [key for key,value in sorted(doc_tfidf.items(), key=lambda kv: kv[1], reverse=True)][:n]
-
-    return ranked_docs
+    # extract document key for each item in a dict sorted by tf-idf
+    return [key for key,value in sorted(doc_tfidf.items(), key=lambda kv: kv[1], reverse=True)][:n]
 
 
 def top_sentences(query, sentences, idfs, n):
@@ -150,8 +151,7 @@ def top_sentences(query, sentences, idfs, n):
         top_matches.append(sent_metrics)
     
     # extract sentence element from each item in a list sorted by matching word measure, then by query term density
-    sort_matches = [sent for sent, m1, m2 in sorted(top_matches, key=lambda kv: (kv[1], kv[2]), reverse=True)][:n]
-    return sort_matches
+    return [sent for sent, m1, m2 in sorted(top_matches, key=lambda kv: (kv[1], kv[2]), reverse=True)][:n]
 
 
 if __name__ == "__main__":
