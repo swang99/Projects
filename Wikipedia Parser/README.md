@@ -14,6 +14,11 @@ The statistical metric I used to determine relevant matches is called tf-idf. It
 - corpus - folder of Wikipedia articles for the AI to parse
 - questions.py - where the user inputs their questions and gets the best answer based on 
 
+### Instructions
+1. Run questions.py with the following input: `python questions.py corpus` 
+2. Wait for a prompt called "Query: " to pop up, and type your question. Some samples are provided below. 
+3. Enter 'x' or 'exit' as a query to quit the program. 
+
 ### Sample Questions and Inputs
 - Who developed probability?
 - How are the methods of machine learning and statistics related?
@@ -21,9 +26,8 @@ The statistical metric I used to determine relevant matches is called tf-idf. It
 - How do neurons connect in a neural network?
 - What are the types of supervised learning?
 - What is this the can? → invalid question
-- x / exit → exits the program  
   
-Note: the wording of the question matters a lot, so look inside the corpus documents to strategically phrase them.
+Note: if you come up with your own, be aware that the wording of the question matters. Look inside the corpus documents to strategically phrase your query with keywords.
 
 ### System Requirements  
 `pip3 install nltk`  
