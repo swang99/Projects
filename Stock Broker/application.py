@@ -32,7 +32,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Configure CS50 Library to use SQLite database
+# Configure SQLite database
 db = SQL("sqlite:///finance.db")
 
 # Make sure API key is set
@@ -58,6 +58,7 @@ def index():
         totalvalue = amntcash + amntstock
         return render_template("index.html", holdings=holdings, amntcash=amntcash, totalvalue=totalvalue)
 
+
 @app.route("/cash", methods=["GET", "POST"])
 @login_required
 def addcash():
@@ -67,8 +68,9 @@ def addcash():
     else:
         transct_cash = request.form.get("amount")
         db.execute("UPDATE users SET cash = cash + ?", transct_cash)
-        flash("Your cash balance has been updated! Money can instantaneously spawn or disappear from C$50 Finance.")
+        flash("Your cash balance has been updated!")
         return redirect("/")
+
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
@@ -117,6 +119,7 @@ def history():
     # For an empty history
     if not history:
         return apology("No history.")
+    
     # For an existing history
     else:
         return render_template("history.html", history=history)
@@ -124,19 +127,15 @@ def history():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Log user in"""
-
     # Forget any user_id
-    session.clear()
+    session.clear() 
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
-        # Ensure username was submitted
+        # Ensure username and password are both submitted
         if not request.form.get("username"):
             return apology("must provide username", 403)
-
-        # Ensure password was submitted
         elif not request.form.get("password"):
             return apology("must provide password", 403)
 
@@ -161,11 +160,9 @@ def login():
 
 @app.route("/logout")
 def logout():
-    """Log user out"""
-
     # Forget any user_id
-    session.clear()
-
+    session.clear() 
+    
     # Redirect user to login form
     return redirect("/")
 
@@ -212,7 +209,6 @@ def register():
             return redirect("/")
 
 
-
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
@@ -252,7 +248,6 @@ def errorhandler(e):
     if not isinstance(e, HTTPException):
         e = InternalServerError()
     return apology(e.name, e.code)
-
 
 # Listen for errors
 for code in default_exceptions:
