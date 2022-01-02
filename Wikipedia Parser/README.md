@@ -1,0 +1,37 @@
+# Wikipedia Article Parser
+
+<p align="left">
+  <img width="200" height="150" src="https://i.insider.com/5fbd515550e71a001155724f?width=600&format=jpeg&auto=webp">
+</p>
+
+### About
+A simple question answering system that retrives information from a corpus of text files.
+When presented with a query (a user-inputted question in English), document retrieval will first identify which files are most relevant to the query. Once the top documents are found, it will be divided into sentences so that the most relevant one to the question can be determined.
+
+The statistical metric I used to determine relevant matches is called tf-idf. It ranks documents based on the term frequency for words in the query and the inverse document frequency of the word, which measures its rarity inside the corpus. After finding the most relevant documents, I used a combination of inverse document frequency and query term density to score the sentences. Query term density is the proportion of words in the sentence that are also words in the query.
+
+### Files
+- corpus - folder of Wikipedia articles for the AI to parse
+- questions.py - where the user inputs their questions and gets the best answer based on 
+
+### Instructions
+1. Run questions.py with the following input: `python questions.py corpus` 
+2. Wait for a prompt called "Query: " to pop up, and type your question. Some samples are provided below. 
+3. Enter 'x' or 'exit' as a query to quit the program. 
+
+### Sample Questions and Inputs
+- Who developed probability?
+- How are the methods of machine learning and statistics related?
+- When was Python released?
+- How do neurons connect in a neural network?
+- What are the types of supervised learning?
+- What is this the can? → invalid question
+  
+Note: if you come up with your own, be aware that the wording of the question matters. Look inside the corpus documents to strategically phrase your query with keywords.
+
+### System Requirements  
+`pip3 install nltk`  
+
+You might also need to use the following prompts in the terminal:  
+`python -m nltk.downloader stopwords`  
+`python -m nltk.downloader 'punkt'`

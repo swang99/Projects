@@ -1,5 +1,8 @@
 ## Dots and Boxes
 
+![Image of Game Board](https://github.com/swang99/README-img/blob/main/Dots%20and%20Boxes.png)
+
+
 ### Game instructions
 1. Run dotsandboxes.py. The game window should open.
 1. Two players take turns selecting an edge that connects two dots.
@@ -14,4 +17,4 @@ dotsandboxes.py - Contains the game interface and logic.
 edges.py - Contains a class which draws the board and blits the game's text.
 
 ### System requirements
-pygame
+`pip3 install pygame`
