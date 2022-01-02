@@ -1,0 +1,39 @@
+html, 
+body {
+	background-color: rgba(230, 230, 230);
+	text-rendering: optimizeLegibility;   
+	overflow-x: hidden;
+	scroll-behavior: smooth;
+}
+
+.player-icons {
+	font-size: 1.75em;
+	text-align: center;
+}
+
+#upload {
+	color:rgb(200, 50, 100);
+}
+
+.progress-area {
+	height: 6px;
+	width: 100%;
+	background: rgb(200, 200, 200);
+}
+
+.progress-area .progress-bar {
+	height: inherit;
+	width: 0vw;
+	background: rgb(200, 50, 100);
+}
+
+.time, .time-rem, .time-rem-mid {
+	font-size: 14px;
+	font-family: 'Lato', sans-serif;
+}
+
+.time-rem { float: right; }
+
+.song-upload>input {
+	display: none;
+}

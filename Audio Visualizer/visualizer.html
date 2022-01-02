@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="visualizer.css" type="text/css">
+		<title> Audio Visualizer </title>
+	</head>
+	<body>
+		<main>
+			<div class="player-icons">
+				<ion-icon name="play-skip-back-outline" onclick="prevSong()"></ion-icon>
+				<ion-icon name="play" id="play-pause" onclick="playPauseBtn()"></ion-icon>
+				<ion-icon name="play-skip-forward-outline" onclick="nextSong()"></ion-icon>
+				<ion-icon name="shuffle" id="shuffle-loop" onclick="toggleShuffleLoop(this)"></ion-icon>
+				<span class="song-upload">
+					<label for="file-input">
+						<ion-icon name="download-outline" id="upload"></ion-icon>
+					</label>
+					<input multiple type="file" id="file-input" onchange="uploadSong()">
+				</span>
+			</div>
+			<span class="time" id="time-text"> 0:00 </span>
+			<span class="time-rem" id="time-text-rem"> -0:00 </span>
+			<div class="progress-area" onclick="jumpProgress()">
+				<div class="progress-bar" id="time-bar"> </div>
+			</div>
+		</main>
+		<script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+		<script src="p5.sound.js"></script>
+		<script src="visualizer.js"></script>
+		<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+		<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+	</body>
+</html>
