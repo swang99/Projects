@@ -1,34 +1,34 @@
-var song, amplitude;
-var song_num = 0;
-var img;
-var fft;
-var particles = [];
-const MIN_RADIUS = 150;
-const MAX_RADIUS = 350;
+let song, amplitude, img, fft;
+let song_num = 0;
+let particles = [];
+let window_width, window_height;
+let min_radius, max_radius; // 150, 350
+const FRAME_RATE = 30;
 
 /* playlist */
-var tracks = new Map();
-tracks.set('0', ['BrokenHeart.m4a', 'Me and My Broken Heart', 'Rixton']);
-tracks.set('1', ['UsVsWorld.m4a', 'Us Against the World', 'Darren Styles']);
-tracks.set('2', ['StereoHearts.m4a', 'Stereo Hearts', 'Gym Class Heroes']);
-tracks.set('3', ['FireflyII.m4a', 'Firefly, Part II', 'Jim Yosef']);
-tracks.set('4', ['Lily.m4a', 'Lily', 'Alan Walker'])
+let tracks = new Map();
+tracks.set('5', ['media/BrokenHeart.m4a', 'Me and My Broken Heart', 'Rixton']);
+tracks.set('1', ['media/UsVsWorld.m4a', 'Us Against the World', 'Darren Styles']);
+tracks.set('2', ['media/StereoHearts.m4a', 'Stereo Hearts', 'Gym Class Heroes']);
+tracks.set('3', ['media/FireflyII.m4a', 'Firefly, Part II', 'Jim Yosef']);
+tracks.set('4', ['media/Lily.m4a', 'Lily', 'Alan Walker'])
+tracks.set('0', ['media/VioletsLetter.m4a', 'Violet\'s Letter', 'Evan Call'])
 
 /* setup and waveform */
 function preload() {
   song = loadSound(tracks.get(str(song_num))[0]);
-	song.rate(1.05);
-	song.setVolume(0.75);
-	img = loadImage('back1.jpeg');
 }
 
 function setup() {
-	// canvas drawing tools
-  let cnv = createCanvas(windowWidth, windowHeight - 75);
+	// create canvas, determine size of audio visualizer
+	img = createImg('https://i3.ytimg.com/vi/XnseVYTF8_0/maxresdefault.jpg', 'Major Gilbert')
+	img.position(0, -10000);
+
+  let cnv = createCanvas(windowWidth, windowHeight);
 	cnv.mousePressed(playPauseBtn);
-	
+	resizeCircle();
 	angleMode(DEGREES); 
-	frameRate(50);
+	frameRate(FRAME_RATE);
 	rectMode(CENTER);
 
 	// audio analysis tools
@@ -39,93 +39,108 @@ function setup() {
 // dynamic resizing based on window
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
+	resizeCircle();
+}
+
+function resizeCircle() {
+	window_width = windowWidth;
+	window_height = windowHeight;
+	min_radius = 20 * (window_height/window_width);
+	max_radius = 300;
 }
 
 /* drawing loop */
 function draw() {
-	background(img);
-	stroke(255); // outline color of visualizer
-	translate(width/2, height/2) // center visualizer
-	fill('rgba(20,20,20,0.6)')
-	rect(0, 0, width, height);
-	noStroke();
-	ellipse(0, 0, MIN_RADIUS + MAX_RADIUS);
-
+	drawCanvas();
 	trackDetails();
+	createVisualizer();
 
 	// update song progress bar and time
-	if (song.isPlaying() && frameCount % 30 == 0) {
+	if (song.isPlaying() && frameCount % (FRAME_RATE/2) == 0) {
 		updateBar(int(song.currentTime()));
 		updateTime(int(song.currentTime()));
 		updateTimeRem(int(song.currentTime()));
-		if (abs(song.duration() - song.currentTime()) < 0.5) {
+		if (song.currentTime() > Math.floor(song.duration())) {
 			shuffleLoop();
 		}
 	}
+	
+	function drawCanvas() {
+		background(220);
+		image(img, 0, 0);
+		stroke(255); // outline color of visualizer
+		translate(width/2, height/2) // center visualizer
+		fill(`rgba(20,20,20,${Math.max(amplitude.getLevel(), 0.3)})`)
+		rect(0, 0, width, height);
+		noStroke();
+		ellipse(0, 0, min_radius + max_radius);
+	}
+	
+	function trackDetails() {
+		// name
+		textFont('Lato');
+		textSize(25);
+		textStyle(BOLD);
+		textAlign(CENTER);
+		fill(255);
+		text(tracks.get(str(song_num))[1], 0, 0);
+	
+		// artist
+		textSize(20);
+		textStyle(NORMAL);
+		text(tracks.get(str(song_num))[2], 0, 30);
+	}
 
-	// waveform analysis on time domain
-	let wave = fft.waveform();
-	
-	// create two halves of visualizer circle
-	noFill();
-	let vis_col = soundColor();
-	stroke(vis_col[0],vis_col[1],vis_col[2])
-	
-	for (let h = -1; h <= 1; h += 2) {
-		beginShape();
-		for (let i = 0; i <= 180; i += 0.75) {
-			let index = floor(map(i, 0, 180, 0, wave.length - 1))
-			let r = map(wave[index], -1, 1, MIN_RADIUS, MAX_RADIUS)
-			let x = r * h * sin(i);
-			let y = r * cos(i);
-			vertex(x,y);
+	function createVisualizer() {
+		let wave = fft.waveform(); // waveform analysis on time domain
+		min_radius = 400 * amplitude.getLevel() * (window_height/window_width);
+		
+		noFill();
+		let vis_col = soundColor();
+		stroke(220);
+		//stroke(vis_col[0],vis_col[1],vis_col[2])
+		
+		for (let h = -1; h <= 1; h += 2) {
+			beginShape();
+			for (let i = 0; i <= 180; i += 0.75) {
+				let index = floor(map(i, 0, 180, 0, wave.length - 1))
+				let r = map(wave[index], -1, 1, min_radius, max_radius*0.75)
+				let x = r * h * sin(i);
+				let y = r * cos(i);
+				vertex(x,y);
+			}
+			endShape();
 		}
-		endShape();
-	}
-	
-	// generate particles
-	if (song.isPlaying()) {
-		for (let i = 0; i < 3; i++) {
-			particles.push(new Particle());
+		
+		// generate particles
+		if (song.isPlaying()) {
+			for (let i = 0; i < 3; i++) {
+				particles.push(new Particle());
+			}
+		}
+
+		// particle velocity and color depends on wave amplitude
+		for (let i = 0; i < particles.length; i++) {
+			if (!particles[i].onEdge()) {
+				particles[i].update(amplitude.getLevel()); 
+				particles[i].show(vis_col[0],vis_col[1],vis_col[2]);
+			} else {
+				// remove off-screen particles
+				particles.splice(i, 1); 
+			}
 		}
 	}
-
-	// particle velocity and color depends on wave amplitude
-	for (let i = 0; i < particles.length; i++) {
-		if (!particles[i].onEdge()) {
-			particles[i].update(amplitude.getLevel()); 
-			particles[i].show(vis_col[0],vis_col[1],vis_col[2]);
-		} else {
-			// remove off-screen particles
-			particles.splice(i, 1); 
-		}
-	}
-}
-
-function trackDetails() {
-	textFont('Lato');
 	
-	// name
-	textSize(25);
-	textStyle(BOLD);
-	textAlign(CENTER);
-	fill(255);
-	text(tracks.get(str(song_num))[1], 0, 0);
-
-	// artist
-	textSize(20);
-	textStyle(NORMAL);
-	text(tracks.get(str(song_num))[2], 0, 30);
-}
-
-function soundColor() {
-	let color = [255,255,255];
-	if (amplitude.getLevel() >= 0.4) {
-		color = [255,50,0];
-	} else if (amplitude.getLevel() >= 0.3) {
-		color = [255,165,0];
+	function soundColor() {
+		let color = [255,255,255];
+		if (amplitude.getLevel() >= 0.4) {
+			color = [255,50,0];
+		} else if (amplitude.getLevel() >= 0.3) {
+			color = [255,165,0];
+		}
+		return color;
 	}
-	return color;
+
 }
 
 /* music player controls */
@@ -178,20 +193,22 @@ function toggleShuffleLoop(icon) {
 
 function shuffleLoop() {
 	let button_mode = document.getElementById('shuffle-loop').name;
-	let finished = song.duration() - song.currentTime() < 0.5; 
+	let finished = song.currentTime() > Math.floor(song.duration());
 
 	if (finished && button_mode == 'shuffle') {
 		let rand_num = int(random(0, tracks.size));
 		while (rand_num == song_num) {
 			rand_num = int(random(0, tracks.size));
 		}
-		song.stop();
+		
 		song_num = rand_num;
-		console.log(song_num);
+		song.playMode('restart');
 		song = loadSound(tracks.get(str(song_num))[0], playPauseBtn);
+		
 	} 
 	
 	else if (finished && button_mode == 'repeat') {
+		song.playMode('restart');
 		song.loop();
 	}
 }
@@ -204,6 +221,27 @@ function uploadSong() {
 		let song_name = prompt("Successfully uploaded " + song_file + ". Enter the name of the song: ");
 		let song_artist = prompt("Enter the name of the artist: ");
 		tracks.set(str(tracks.size), [song_file, song_name, song_artist]);
+	}
+}
+
+// upload url button
+function uploadURL() {
+	let yt_url = prompt("Enter the URL of a Youtube video: ");
+	if (yt_url != null) {
+		let video_info = `https://www.youtube.com/oembed?url=${yt_url}&format=json`
+		fetch(video_info)
+			.then(response => response.json())
+			.then(function(data) {
+				let n = data["thumbnail_url"].lastIndexOf('/');
+				let thumbnail_url = data["thumbnail_url"].substring(0, n+1) + 'maxresdefault.jpg';
+				setThumbnail(thumbnail_url)
+			})
+			.catch(console.error('Video does not exist'));
+		
+		function setThumbnail(thumb) {
+			img = createImg(thumb, '');
+			img.position(0, -10000);
+		}
 	}
 }
 
@@ -263,7 +301,7 @@ function jumpProgress() {
 /* particles */
 class Particle {
 	constructor() {
-		this.pos = p5.Vector.random2D().mult((MIN_RADIUS + MAX_RADIUS) / 2);
+		this.pos = p5.Vector.random2D().mult((min_radius + max_radius) / 2);
 		this.velocity = createVector(0, 0)
 		this.accel = this.pos.copy().mult(random(0.0002, 0.002))
 
@@ -290,4 +328,4 @@ class Particle {
 
 // potential extensions
 // predicting a bass drop
-// time bar
+// insert audio based on youtube url

@@ -14,11 +14,12 @@
 				<ion-icon name="play" id="play-pause" onclick="playPauseBtn()"></ion-icon>
 				<ion-icon name="play-skip-forward-outline" onclick="nextSong()"></ion-icon>
 				<ion-icon name="shuffle" id="shuffle-loop" onclick="toggleShuffleLoop(this)"></ion-icon>
+				<ion-icon name="link-outline" id="url-upload" onclick=uploadURL()></ion-icon>
 				<span class="song-upload">
 					<label for="file-input">
 						<ion-icon name="download-outline" id="upload"></ion-icon>
 					</label>
-					<input multiple type="file" id="file-input" onchange="uploadSong()">
+					<input type="file" id="file-input" onchange="uploadSong()">
 				</span>
 			</div>
 			<span class="time" id="time-text"> 0:00 </span>
