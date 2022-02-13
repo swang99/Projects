@@ -8,12 +8,11 @@ const FRAME_RATE = 30;
 /* playlist */
 let tracks = new Map();
 tracks.set('0', ['media/Orange7.m4a', 'Orange', 'オレンジ']);
-tracks.set('6', ['media/BrokenHeart.m4a', 'Me and My Broken Heart', 'Rixton']);
-tracks.set('2', ['media/UsVsWorld.m4a', 'Us Against the World', 'Darren Styles']);
-tracks.set('4', ['media/StereoHearts.m4a', 'Stereo Hearts', 'Gym Class Heroes']);
-tracks.set('3', ['media/FireflyII.m4a', 'Firefly, Part II', 'Jim Yosef']);
-tracks.set('5', ['media/Lily.m4a', 'Lily', 'Alan Walker'])
 tracks.set('1', ['media/VioletsLetter.m4a', 'Violet\'s Letter', 'Evan Call'])
+tracks.set('2', ['media/UsVsWorld.m4a', 'Us Against the World', 'Darren Styles']);
+tracks.set('3', ['media/FireflyII.m4a', 'Firefly, Part II', 'Jim Yosef']);
+tracks.set('4', ['media/StereoHearts.m4a', 'Stereo Hearts', 'Gym Class Heroes']);
+tracks.set('5', ['media/BrokenHeart.m4a', 'Me and My Broken Heart', 'Rixton']);
 
 /* setup and waveform */
 function preload() {
@@ -22,8 +21,8 @@ function preload() {
 
 function setup() {
 	// create canvas, determine size of audio visualizer
-	img = createImg('https://i3.ytimg.com/vi/wdRCSZBvJHc/maxresdefault.jpg', 'Major Gilbert')
-	img.position(0, -10000);
+	img = createImg('https://i3.ytimg.com/vi/wdRCSZBvJHc/maxresdefault.jpg', 'Your Lie in April')
+	img.position(0, -1000);
 
   let cnv = createCanvas(windowWidth, windowHeight);
 	cnv.mousePressed(playPauseBtn);
@@ -57,7 +56,7 @@ function draw() {
 	createVisualizer();
 
 	// update song progress bar and time
-	if (song.isPlaying() && frameCount % (FRAME_RATE/4) == 0) {
+	if (song.isPlaying() && frameCount % (FRAME_RATE/3) == 0) {
 		updateBar(int(song.currentTime()));
 		updateTime(int(song.currentTime()));
 		updateTimeRem(int(song.currentTime()));
@@ -68,7 +67,7 @@ function draw() {
 	
 	function drawCanvas() {
 		background(220);
-		image(img, 0, 0);
+		image(img, 0, 0, width, height);
 		stroke(255); // outline color of visualizer
 		translate(width/2, height/2) // center visualizer
 		fill(`rgba(20,20,20,${Math.max(amplitude.getLevel(), 0.3)})`)
@@ -99,7 +98,7 @@ function draw() {
 		noFill();
 		let vis_col = soundColor();
 		stroke(220);
-		//stroke(vis_col[0],vis_col[1],vis_col[2])
+		stroke(vis_col[0],vis_col[1],vis_col[2])
 		
 		for (let h = -1; h <= 1; h += 2) {
 			beginShape();
@@ -194,9 +193,10 @@ function toggleShuffleLoop(icon) {
 
 function shuffleLoop() {
 	let button_mode = document.getElementById('shuffle-loop').name;
-	let finished = song.currentTime() > Math.floor(song.duration());
+	let finished = Math.ceil(song.currentTime()) >= Math.floor(song.duration());
 
 	if (finished && button_mode == 'shuffle') {
+		console.log("Finished")
 		let rand_num = int(random(0, tracks.size));
 		while (rand_num == song_num) {
 			rand_num = int(random(0, tracks.size));
@@ -258,7 +258,7 @@ function updateBar(curr_time) {
 function updateTime(curr_time) {
 	let time = document.getElementById('time-text');
 	let minutes = Math.floor(int(curr_time) / 60);
-	let secs = int(curr_time - (60 * minutes));
+	let secs = Math.floor(curr_time - (60 * minutes));
 
 	if (secs < 10) {
 		time.innerHTML = str(minutes) + ":0" + str(secs);
@@ -270,7 +270,7 @@ function updateTime(curr_time) {
 function updateTimeRem(curr_time) {
 	let time_rem = document.getElementById('time-text-rem');
 	let minutes = Math.floor((int(song.duration()) - curr_time) / 60);
-	let secs = int(song.duration() - ((60 * minutes) + curr_time));
+	let secs = Math.floor(song.duration() - ((60 * minutes) + curr_time));
 
 	if (secs < 10) {
 		time_rem.innerHTML = "-" + str(minutes) + ":0" + str(secs);
@@ -300,7 +300,7 @@ function jumpProgress() {
 	}
 }
 
-/* particles */
+/* generate particles spawning from visualizer */
 class Particle {
 	constructor() {
 		this.pos = p5.Vector.random2D().mult((min_radius + max_radius) / 2);
@@ -327,7 +327,3 @@ class Particle {
 		return this.pos.x < -width / 2 || this.pos.x > width / 2 || this.pos.y < -height / 2 || this.pos.y > height / 2;
 	}
 }
-
-// potential extensions
-// predicting a bass drop
-// insert audio based on youtube url
