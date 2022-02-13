@@ -6,8 +6,10 @@ A music player with an audio visualizer based on Fast Fourier Transform of a wav
 - Play/Pause
 - Seek Song
 - Shuffle/Loop
-- Change Background (Thumbanil of Youtube URL)
+- Change Background (Thumbnail of Youtube URL)
 - Upload Song from File
+
+Usage: To start the visualizer, download this repository and use an IDE to live preview `visualizer.js`.
 
 Inspiration from Youtube channels Trap Nation and NoCopyrightSounds: 
 ![Trap Nation Thumbnail](media/trap_nation.jpeg)
