@@ -7,12 +7,13 @@ const FRAME_RATE = 30;
 
 /* playlist */
 let tracks = new Map();
-tracks.set('5', ['media/BrokenHeart.m4a', 'Me and My Broken Heart', 'Rixton']);
-tracks.set('1', ['media/UsVsWorld.m4a', 'Us Against the World', 'Darren Styles']);
-tracks.set('2', ['media/StereoHearts.m4a', 'Stereo Hearts', 'Gym Class Heroes']);
+tracks.set('0', ['media/Orange7.m4a', 'Orange', 'オレンジ']);
+tracks.set('6', ['media/BrokenHeart.m4a', 'Me and My Broken Heart', 'Rixton']);
+tracks.set('2', ['media/UsVsWorld.m4a', 'Us Against the World', 'Darren Styles']);
+tracks.set('4', ['media/StereoHearts.m4a', 'Stereo Hearts', 'Gym Class Heroes']);
 tracks.set('3', ['media/FireflyII.m4a', 'Firefly, Part II', 'Jim Yosef']);
-tracks.set('4', ['media/Lily.m4a', 'Lily', 'Alan Walker'])
-tracks.set('0', ['media/VioletsLetter.m4a', 'Violet\'s Letter', 'Evan Call'])
+tracks.set('5', ['media/Lily.m4a', 'Lily', 'Alan Walker'])
+tracks.set('1', ['media/VioletsLetter.m4a', 'Violet\'s Letter', 'Evan Call'])
 
 /* setup and waveform */
 function preload() {
@@ -21,7 +22,7 @@ function preload() {
 
 function setup() {
 	// create canvas, determine size of audio visualizer
-	img = createImg('https://i3.ytimg.com/vi/XnseVYTF8_0/maxresdefault.jpg', 'Major Gilbert')
+	img = createImg('https://i3.ytimg.com/vi/wdRCSZBvJHc/maxresdefault.jpg', 'Major Gilbert')
 	img.position(0, -10000);
 
   let cnv = createCanvas(windowWidth, windowHeight);
@@ -56,7 +57,7 @@ function draw() {
 	createVisualizer();
 
 	// update song progress bar and time
-	if (song.isPlaying() && frameCount % (FRAME_RATE/2) == 0) {
+	if (song.isPlaying() && frameCount % (FRAME_RATE/4) == 0) {
 		updateBar(int(song.currentTime()));
 		updateTime(int(song.currentTime()));
 		updateTimeRem(int(song.currentTime()));
@@ -217,10 +218,11 @@ function shuffleLoop() {
 function uploadSong() {
 	let uploaded_files = document.getElementById('file-input').files;
 	for (let i = 0; i < uploaded_files.length; i++) {
-		let song_file = uploaded_files[i].name;
+		let song_file = "media/" + uploaded_files[i].name;
 		let song_name = prompt("Successfully uploaded " + song_file + ". Enter the name of the song: ");
 		let song_artist = prompt("Enter the name of the artist: ");
 		tracks.set(str(tracks.size), [song_file, song_name, song_artist]);
+		console.log(tracks)
 	}
 }
 
