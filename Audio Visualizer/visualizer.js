@@ -60,9 +60,10 @@ function draw() {
 		updateBar(int(song.currentTime()));
 		updateTime(int(song.currentTime()));
 		updateTimeRem(int(song.currentTime()));
-		if (song.currentTime() > Math.floor(song.duration())) {
-			shuffleLoop();
-		}
+	}
+
+	if (ceil(song.currentTime()) > Math.floor(song.duration())) {
+		shuffleLoop();
 	}
 	
 	function drawCanvas() {
@@ -93,7 +94,7 @@ function draw() {
 
 	function createVisualizer() {
 		let wave = fft.waveform(); // waveform analysis on time domain
-		min_radius = 400 * amplitude.getLevel() * (window_height/window_width);
+		min_radius = 400 * amplitude.getLevel() * (window_width/window_height);
 		
 		noFill();
 		let vis_col = soundColor();
@@ -103,7 +104,10 @@ function draw() {
 		for (let h = -1; h <= 1; h += 2) {
 			beginShape();
 			for (let i = 0; i <= 180; i += 0.75) {
+				// map wave data to length of semi-circle
 				let index = floor(map(i, 0, 180, 0, wave.length - 1))
+				
+				// map values to polar coordinates
 				let r = map(wave[index], -1, 1, min_radius, max_radius*0.75)
 				let x = r * h * sin(i);
 				let y = r * cos(i);
@@ -193,10 +197,8 @@ function toggleShuffleLoop(icon) {
 
 function shuffleLoop() {
 	let button_mode = document.getElementById('shuffle-loop').name;
-	let finished = Math.ceil(song.currentTime()) >= Math.floor(song.duration());
 
-	if (finished && button_mode == 'shuffle') {
-		console.log("Finished")
+	if (button_mode == 'shuffle') {
 		let rand_num = int(random(0, tracks.size));
 		while (rand_num == song_num) {
 			rand_num = int(random(0, tracks.size));
@@ -205,10 +207,9 @@ function shuffleLoop() {
 		song_num = rand_num;
 		song.playMode('restart');
 		song = loadSound(tracks.get(str(song_num))[0], playPauseBtn);
-		
 	} 
 	
-	else if (finished && button_mode == 'repeat') {
+	else if (button_mode == 'repeat') {
 		song.playMode('restart');
 		song.loop();
 	}
@@ -230,11 +231,14 @@ function uploadSong() {
 function uploadURL() {
 	let yt_url = prompt("Enter the URL of a Youtube video: ");
 	if (yt_url != null) {
+		// query youtube oembed api
 		let video_info = `https://www.youtube.com/oembed?url=${yt_url}&format=json`
+		
 		fetch(video_info)
 			.then(response => response.json())
 			.then(function(data) {
-				let n = data["thumbnail_url"].lastIndexOf('/');
+				// extract video ID and ensure thumbanil is max resolution
+				let n = data["thumbnail_url"].lastIndexOf('/'); // extract video ID
 				let thumbnail_url = data["thumbnail_url"].substring(0, n+1) + 'maxresdefault.jpg';
 				setThumbnail(thumbnail_url)
 			})
@@ -303,10 +307,12 @@ function jumpProgress() {
 /* generate particles spawning from visualizer */
 class Particle {
 	constructor() {
+		// set position of particle and give acceleration to its velocity vector
 		this.pos = p5.Vector.random2D().mult((min_radius + max_radius) / 2);
 		this.velocity = createVector(0, 0)
 		this.accel = this.pos.copy().mult(random(0.0002, 0.002))
 
+		// change particle size based on volume
 		this.w = 20 * amplitude.getLevel();
 	}
 

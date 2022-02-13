@@ -9,7 +9,20 @@ A music player with an audio visualizer based on Fast Fourier Transform of a wav
 - Change Background (Thumbnail of Youtube URL)
 - Upload Song from File
 
-Usage: To start the visualizer, download this repository and use an IDE to live preview `visualizer.js`.
+Usage: To start the visualizer, download this repository and live preview the file `visualizer.html`.
+The following songs are included in the player:
+
+More Emotion 💦
+- Orange, *オレンジ*
+- Violet's Letter, *Evan Call*
+
+More Fire 🔥
+- Us Against the World, *Darren Styles*
+- Firefly, Part II, *Jim Yosef*
+- Stereo Hearts, *Gym Class Heroes*
+- Me and My Broken Heart, *Rixton*
+
+To upload a song from file, ensure that it is placed in the `media` folder.
 
 Inspiration from Youtube channels Trap Nation and NoCopyrightSounds: 
 ![Trap Nation Thumbnail](media/trap_nation.jpeg)
