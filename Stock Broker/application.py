@@ -77,7 +77,7 @@ def addcash():
 def buy():
     # Buy shares of stock
     if request.method == "GET":
-            return render_template("buy.html")
+        return render_template("buy.html")
     else:
         quote = lookup(request.form.get("symbol"))
 
@@ -121,8 +121,7 @@ def history():
         return apology("No history.")
     
     # For an existing history
-    else:
-        return render_template("history.html", history=history)
+    return render_template("history.html", history=history)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -187,18 +186,18 @@ def quote():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register user"""
+    # Register user
     if request.method == 'GET':
         return render_template('register.html')
     else:
-        """Check if passwords match"""
+        # Check if passwords match
         if request.form.get("password") == request.form.get("confirmation"):
             password = generate_password_hash(request.form.get("password"), method='pbkdf2:sha256', salt_length=8)
         else:
             passerr = "Passwords do not match. Please check your inputs."
             return render_template('notmatchp.html', passerr=passerr)
 
-        """Check if username is available"""
+        # Check if username is available
         username = request.form.get("username")
         count = db.execute("SELECT * FROM users WHERE username = ?", username)
         if len(count) != 0:
