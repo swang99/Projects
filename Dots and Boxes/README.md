@@ -2,6 +2,7 @@
 
 ![Image of Game Board](https://github.com/swang99/README-img/blob/main/Dots%20and%20Boxes.png)
 
+The classic 2 player pen-and-paper game made in Python.
 
 ### Game instructions
 1. Run dotsandboxes.py. The game window should open.
@@ -17,4 +18,4 @@ dotsandboxes.py - Contains the game interface and logic.
 edges.py - Contains a class which draws the board and blits the game's text.
 
 ### System requirements
-`pip3 install pygame`
+`pygame`
