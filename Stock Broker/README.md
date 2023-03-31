@@ -1,6 +1,8 @@
 ## Stock Broker
 
 ### Usage
+Install requirements: `pip install -r requirements.txt`
+
 Initialize app: `export FLASK_APP=application.py`
 
 API Key: `export API_KEY=pk_ef0fdffb0c5a467f84ca3d9a85612141`
